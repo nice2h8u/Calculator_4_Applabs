@@ -8,6 +8,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     private Button btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9;
@@ -78,10 +83,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         ///
 
 
+
     }
 
     //function calculate the results and if the answer is int - cast float to int
     public void calculate_to_int() {
+
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        formatter.setMaximumFractionDigits(2);
+        formatter.setMinimumFractionDigits(2);
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+
 
         arrayOfArgs4Calculation = calculator.findArguments(calculate_area.getText().toString());
 
@@ -93,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             calculate_area.setText(String.valueOf((int) result));
             dotMutex = true;
         } else {
-            calculate_area.setText(String.valueOf(result));
+            calculate_area.setText(formatter.format(result) );
             dotMutex = false;
         }
 
@@ -140,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     //get last char
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
                 //if it eq to sign
-                if (checkTheLastChar()) {
+                if (checkTheLastChar()|(".".equals(lastSymbol))) {
                     //do nothing
                 }
                 //if length not 0
@@ -158,8 +170,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 if (calculate_area.getText().length() != 0)
                     //get last char
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
+                else lastSymbol = "";
+
                 //if it eq to sign
-                if (checkTheLastChar()) {
+                if (checkTheLastChar()&&calculate_area.getText().length()>1) {
                     flagOnSign = false;
                     if (calculate_area.getText().toString().contains("."))
                         dotMutex = false;
@@ -193,9 +207,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 if (calculate_area.getText().length() != 0)
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
-
+                else lastSymbol = "";
                 //flag unpressed
-                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol))) {
+                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol)) &!("-".equals(lastSymbol))) {
 
                     //+ to string
                     calculate_area.append("+");
@@ -207,16 +221,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     //if sigh was already pressed and last symbol not +,-,*,/
                 } else if (checkTheLastChar()) {
                     //swap the sign
-                    calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "+");
+                    if (calculate_area.getText().length() == 1)
+                        calculate_area.setText("");
+                    else
+                        calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "+");
                 }
 
                 //if last char is not sign and sign was already pressed - calculate
-                else if ((flagOnSign) ) {
+                else if ((flagOnSign) &(!".".equals(lastSymbol))) {
                     calculate_to_int();
 
                     calculate_area.append("+");
                     //sign unpressed
                     flagOnSign = true;
+                    dotMutex = true;
 
                 }
 
@@ -228,9 +246,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 if (calculate_area.getText().length() != 0)
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
+                else lastSymbol = "";
 
                 //flag unpressed
-                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol))) {
+                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol)) &!("-".equals(lastSymbol))) {
 
                     //+ to string
                     calculate_area.append("-");
@@ -242,16 +261,25 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 }
                 else if (checkTheLastChar()) {
                     //swap the sign
-                    calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "-");
+
+
+                    if (calculate_area.getText().length() == 1)
+                        calculate_area.setText("");
+                    else  calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "-");
                 }
 
                 //if last char is not sign and sign was already pressed - calculate
-                else if ((flagOnSign) ) {
+                else if ((flagOnSign) &(!".".equals(lastSymbol))) {
                     calculate_to_int();
                     calculate_area.append("-");
                     //sign unpressed
                     flagOnSign = true;
+                    dotMutex = true;
 
+                }
+
+                if (calculate_area.getText().length() == 0){
+                    calculate_area.append("-");
                 }
 
 
@@ -262,9 +290,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 if (calculate_area.getText().length() != 0)
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
-
+                else lastSymbol = "";
                 //flag unpressed
-                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol))) {
+                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol)) &!("-".equals(lastSymbol))) {
 
                     //+ to string
                     calculate_area.append("*");
@@ -275,7 +303,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     //if sigh was already pressed and last symbol not +,-,*,/
                 } else if (checkTheLastChar()) {
                     //swap the sign
-                    calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "*");
+                    if (calculate_area.getText().length() == 1)
+                        calculate_area.setText("");
+                    else
+                        calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "*");
                 }
 
                 //if last char is not sign and sign was already pressed - calculate
@@ -284,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     calculate_area.append("*");
                     //sign unpressed
                     flagOnSign = true;
-
+                    dotMutex = true;
                 }
 
 
@@ -295,9 +326,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 if (calculate_area.getText().length() != 0)
                     lastSymbol = (calculate_area.getText().subSequence(calculate_area.getText().length() - 1, calculate_area.getText().length())).toString();
-
+                else lastSymbol = "";
                 //flag unpressed
-                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol))) {
+                if ((!flagOnSign) & (calculate_area.getText().length() != 0) & !(".".equals(lastSymbol)) &!("-".equals(lastSymbol))) {
 
                     //+ to string
                     calculate_area.append("/");
@@ -308,7 +339,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     //if sigh was already pressed and last symbol not +,-,*,/
                 } else if (checkTheLastChar()) {
                     //swap the sign
-                    calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "/");
+                    if (calculate_area.getText().length() == 1)
+                        calculate_area.setText("");
+                    else
+                        calculate_area.setText(calculate_area.getText().subSequence(0, calculate_area.getText().length() - 1) + "/");
                 }
 
                 //if last char is not sign and sign was already pressed - calculate
@@ -317,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     calculate_area.append("/");
                     //sign unpressed
                     flagOnSign = true;
-
+                    dotMutex = true;
                 }
 
 
@@ -330,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
 
                 if (checkTheLastChar()) {
-                } else if (flagOnSign) {
+                } else if ((flagOnSign) &(!".".equals(lastSymbol))) {
                     //find arguments for calculation from calculating area
 
                     calculate_to_int();
